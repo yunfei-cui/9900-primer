@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { getStudents, createStudent, updateStudent, deleteStudent } from './api'
+import { getStudents, createStudent, updateStudent, deleteStudent, getStats } from './api'
 import StudentForm from './components/StudentForm'
 import StudentTable from './components/StudentTable'
 import EditStudentModal from './components/EditStudentModal'
+import Stats from './components/Stats'
 import './App.css'
 
 export default function App() {
   const [students, setStudents] = useState([])
+  const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [editing, setEditing] = useState(null)
@@ -17,6 +19,8 @@ export default function App() {
     try {
       const data = await getStudents()
       setStudents(data)
+      const statsData = await getStats()
+      setStats(statsData)
     } catch (e) {
       setError(e.message)
     } finally {
@@ -33,6 +37,8 @@ export default function App() {
     try {
       const created = await createStudent(student)
       setStudents((prev) => [...prev, created])
+      const statsData = await getStats()
+      setStats(statsData)
     } catch (e) {
       setError(e.message)
     }
@@ -43,6 +49,8 @@ export default function App() {
     try {
       const updated = await updateStudent(id, student)
       setStudents((prev) => prev.map((s) => (s.id === id ? updated : s)))
+      const statsData = await getStats()
+      setStats(statsData)
       setEditing(null)
     } catch (e) {
       setError(e.message)
@@ -54,6 +62,8 @@ export default function App() {
     try {
       await deleteStudent(id)
       setStudents((prev) => prev.filter((s) => s.id !== id))
+      const statsData = await getStats()
+      setStats(statsData)
       if (editing?.id === id) setEditing(null)
     } catch (e) {
       setError(e.message)
@@ -77,6 +87,13 @@ export default function App() {
           <div className="banner banner-error" role="alert">
             {error}
           </div>
+        )}
+
+        {!loading && stats && (
+          <section className="card stats-card">
+            <h2>Statistics</h2>
+            <Stats stats={stats} />
+          </section>
         )}
 
         <section className="card table-card">
