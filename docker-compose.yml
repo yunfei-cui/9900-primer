@@ -11,10 +11,16 @@ services:
       - "5432:5432"
 
   backend:
-    # TODO: you will need to add to this
 
   frontend:
-    # TODO: you will need to add to this
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://backend:5500
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
 
   automark:
     build: ./automark
