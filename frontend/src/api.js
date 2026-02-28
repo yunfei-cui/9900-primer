@@ -40,3 +40,9 @@ export const deleteStudent = async (id) => {
   }
   return res.json();
 }
+
+export const getStats = async () => {
+  const res = await fetch(`${API_BASE}/stats`);
+  if (!res.ok) throw new Error('Failed to load stats');
+  return res.json();
+}
